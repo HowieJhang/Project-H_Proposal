@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project H - Hybrid Hockey MOBA Investment Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 100%);
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            padding: 120px 40px 80px 40px;
+            display: none;
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide-header {
+            background: linear-gradient(90deg, #00d9ff, #0099cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .section-title {
+            color: #00d9ff;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #00d9ff;
+            padding-bottom: 10px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .content-block {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(0, 153, 204, 0.1));
+            border: 2px solid #00d9ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #00d9ff;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #cccccc;
+            margin-top: 5px;
+        }
+
+        .bullet-points {
+            list-style: none;
+        }
+
+        .bullet-points li {
+            margin: 15px 0;
+            padding-left: 30px;
+            position: relative;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .bullet-points li::before {
+            content: "▶";
+            color: #00d9ff;
+            font-size: 1.2rem;
+            position: absolute;
+            left: 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 217, 255, 0.3);
+            font-size: 0.9rem;
+        }
+
+        .comparison-table th {
+            background: rgba(0, 217, 255, 0.2);
+            color: #00d9ff;
+            font-weight: 600;
+        }
+
+        .comparison-table .highlight-row {
+            background: rgba(0, 217, 255, 0.1);
+            border-left: 4px solid #00d9ff;
+        }
+
+        .comparison-cards {
+            display: none;
+        }
+
+        .comparison-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .comparison-card.highlight {
+            background: rgba(0, 217, 255, 0.1);
+            border: 2px solid #00d9ff;
+        }
+
+        .comparison-card h4 {
+            color: #00d9ff;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .comparison-card .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .comparison-card .feature {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(0, 217, 255, 0.2);
+            border: 2px solid #00d9ff;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover {
+            background: #00d9ff;
+            color: #0f1419;
+            transform: translateY(-2px);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 1px solid #00d9ff;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .esports-arena {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #001a2e, #003d5c);
+            border-radius: 15px;
+            border: 2px solid #00d9ff;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .arena-content {
+            text-align: center;
+            color: #fff;
+            z-index: 2;
+        }
+
+        .arena-content h3 {
+            color: #00d9ff;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .arena-content p {
+            font-size: 1.1rem;
+            font-style: italic;
+            line-height: 1.4;
+        }
+
+        .tech-highlights {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .tech-item {
+            text-align: center;
+            padding: 20px 15px;
+            background: rgba(0, 217, 255, 0.05);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            border-radius: 15px;
+        }
+
+        .tech-item h4 {
+            color: #00d9ff;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .demo-container {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .demo-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 80px 15px 40px 15px;
+                height: 100vh;
+                overflow-y: auto;
+            }
+            
+            .slide-header {
+                font-size: 2rem;
+                margin-bottom: 20px;
+            }
+            
+            .section-title {
+                font-size: 1.6rem;
+                margin-bottom: 20px;
+            }
+            
+            .content-grid,
+            .two-column {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            
+            .stat-item {
+                padding: 15px 10px;
+            }
+            
+            .stat-number {
+                font-size: 1.8rem;
+            }
+            
+            .tech-highlights {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .content-block {
+                padding: 15px;
+            }
+            
+            .highlight-box {
+                padding: 15px;
+                margin: 15px 0;
+            }
+            
+            .bullet-points li {
+                font-size: 1rem;
+                padding-left: 25px;
+            }
+            
+            .comparison-table {
+                display: none;
+            }
+            
+            .comparison-cards {
+                display: block;
+            }
+            
+            .esports-arena {
+                height: 200px;
+            }
+            
+            .arena-content h3 {
+                font-size: 1.2rem;
+            }
+            
+            .arena-content p {
+                font-size: 1rem;
+            }
+            
+            .demo-container,
+            .video-container {
+                height: 200px;
+                margin: 15px 0;
+            }
+            
+            .navigation {
+                top: 20px;
+            }
+            
+            .nav-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .slide-counter {
+                top: 20px;
+                right: 10px;
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .slide {
+                padding: 70px 10px 30px 10px;
+            }
+            
+            .slide-header {
+                font-size: 1.6rem;
+            }
+            
+            .section-title {
+                font-size: 1.4rem;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .stat-number {
+                font-size: 1.5rem;
+            }
+            
+            .bullet-points li {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">7</span>
+        </div>
+
+        <!-- Slide 1: Cover -->
+        <div class="slide active">
+            <div class="slide-content">
+                <h1 class="slide-header">Project H</h1>
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <h2 style="font-size: 2.5rem; color: #00d9ff; margin-bottom: 20px;">Hybrid Hockey MOBA</h2>
+                    <p style="font-size: 1.8rem; color: #cccccc;">Investment Proposal</p>
+                </div>
+                <div class="highlight-box" style="text-align: center;">
+                    <p style="font-size: 1.3rem; margin-bottom: 15px;"><strong>The First Hybrid Sports-MOBA Combining Strategic Depth with Hockey Action</strong></p>
+                    <p style="font-size: 1.1rem; line-height: 1.6;">Creating the new category of Sports × Esports × Betting, targeting the rapidly growing competitive gaming market with revolutionary gameplay innovation.</p>
+                </div>
+                <div style="text-align: center; margin-top: 40px; color: #888;">
+                    <p>Executive Summary</p>
+                    <p>August 31, 2025</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Market Opportunity -->
+        <div class="slide">
+            <h2 class="section-title">Market Opportunity - MOBA Growth Data</h2>
+            <div class="slide-content">
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <span class="stat-number">$92B</span>
+                        <span class="stat-label">2024 Mobile Gaming Market</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">$15B</span>
+                        <span class="stat-label">2025 Mobile MOBA Market<br>(CAGR 10-12%)</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">29%</span>
+                        <span class="stat-label">MOBA Share in Esports</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">$2.6B</span>
+                        <span class="stat-label">Honor of Kings<br>2024 Revenue</span>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3 style="color: #00d9ff; margin-bottom: 20px; font-size: 1.5rem; text-align: center;">Market Reality Check</h3>
+                    <p style="font-size: 1.2rem; line-height: 1.6; text-align: center;">
+                        <strong>MOBA is the backbone of esports, but themes have been limited to fantasy heroes for years.</strong><br>
+                        Sports simulation has audiences but fails at competitive esports. Project H fills this massive market gap.
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px;">
+                    <div class="content-block" style="text-align: center;">
+                        <h4 style="color: #64ff64; margin-bottom: 10px;">MOBA Dominance</h4>
+                        <p style="font-size: 0.9rem;">Continuously growing core esports category with proven strong market demand</p>
+                    </div>
+                    <div class="content-block" style="text-align: center;">
+                        <h4 style="color: #64ff64; margin-bottom: 10px;">Theme Saturation</h4>
+                        <p style="font-size: 0.9rem;">Fantasy heroes are oversaturated, sports themes are an untapped blue ocean</p>
+                    </div>
+                    <div class="content-block" style="text-align: center;">
+                        <h4 style="color: #64ff64; margin-bottom: 10px;">Cross-Audience</h4>
+                        <p style="font-size: 0.9rem;">Double audience base of sports fans + esports viewers</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Why No One Has Done This Yet -->
+        <div class="slide">
+            <h2 class="section-title">Why No One Has Done This Yet</h2>
+            <div class="slide-content">
+                <div class="two-column">
+                    <div>
+                        <div style="position: relative; width: 100%; height: 300px; border-radius: 15px; border: 2px solid #00d9ff; overflow: hidden; margin-bottom: 20px;">
+                            <iframe src="https://drive.google.com/file/d/1InGNB_unfl9VMVlyka8lrCermzgu0pUY/preview" 
+                                    width="100%" height="100%" 
+                                    style="border: none; object-fit: cover;">
+                            </iframe>
+                            <div style="position: absolute; bottom: 20px; left: 20px; right: 20px; text-align: center; color: #fff; background: rgba(0, 0, 0, 0.8); padding: 15px; border-radius: 10px;">
+                                <p style="font-size: 1.1rem; font-weight: 600;">"The energy of esports is undeniable —<br>but no one has applied it to hockey MOBA"</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <!-- Desktop Table -->
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Aspect</th>
+                                    <th>MOBA Companies</th>
+                                    <th>Sports Sim</th>
+                                    <th><strong>Project H</strong></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Focus</strong></td>
+                                    <td>Fantasy themes</td>
+                                    <td>Realistic sim</td>
+                                    <td class="highlight-row"><strong>MOBA×Hockey</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Revenue</strong></td>
+                                    <td>F2P + cosmetics</td>
+                                    <td>Annual + cards</td>
+                                    <td class="highlight-row"><strong>Esports+Betting</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Result</strong></td>
+                                    <td>Theme limitation</td>
+                                    <td>Esports failure</td>
+                                    <td class="highlight-row"><strong>Blue Ocean</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Mobile Cards -->
+                        <div class="comparison-cards">
+                            <div class="comparison-card">
+                                <h4>MOBA Companies</h4>
+                                <div class="feature-grid">
+                                    <div class="feature">
+                                        <span>Focus:</span>
+                                        <span>Fantasy themes</span>
+                                    </div>
+                                    <div class="feature">
+                                        <span>Revenue:</span>
+                                        <span>F2P + cosmetics</span>
+                                    </div>
+                                    <div class="feature">
+                                        <span>Result:</span>
+                                        <span>Theme limitation</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="comparison-card">
+                                <h4>Sports Simulation</h4>
+                                <div class="feature-grid">
+                                    <div class="feature">
+                                        <span>Focus:</span>
+                                        <span>Realistic sim</span>
+                                    </div>
+                                    <div class="feature">
+                                        <span>Revenue:</span>
+                                        <span>Annual + cards</span>
+                                    </div>
+                                    <div class="feature">
+                                        <span>Result:</span>
+                                        <span>Esports failure</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="comparison-card highlight">
+                                <h4>Project H ⭐</h4>
+                                <div class="feature-grid">
+                                    <div class="feature">
+                                        <span>Focus:</span>
+                                        <span><strong>MOBA×Hockey</strong></span>
+                                    </div>
+                                    <div class="feature">
+                                        <span>Revenue:</span>
+                                        <span><strong>Esports+Betting</strong></span>
+                                    </div>
+                                    <div class="feature">
+                                        <span>Result:</span>
+                                        <span><strong>Blue Ocean</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Why Hybrid MOBA is the Optimal Choice -->
+                <div class="highlight-box" style="margin-top: 30px;">
+                    <h3 style="color: #00d9ff; margin-bottom: 20px; font-size: 1.4rem;">Why Hybrid MOBA is the Optimal Choice</h3>
+                    
+                    <!-- Desktop Layout -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;" class="comparison-table">
+                        <div style="padding: 15px; background: rgba(0, 217, 255, 0.05); border-radius: 10px;">
+                            <h4 style="color: #64ff64; margin-bottom: 10px;">Double Audience, Single Product</h4>
+                            <p style="font-size: 0.9rem; line-height: 1.4;">Seamlessly unites MOBA core gamers and hockey/sports fans, creating a much larger addressable market.</p>
+                        </div>
+                        <div style="padding: 15px; background: rgba(0, 217, 255, 0.05); border-radius: 10px;">
+                            <h4 style="color: #64ff64; margin-bottom: 10px;">Hype-first Design</h4>
+                            <p style="font-size: 0.9rem; line-height: 1.4;">Instead of realism, every mechanic is tuned to amplify the <em>feeling of winning</em> — steady micro-victories and explosive highlights that keep both players and spectators engaged.</p>
+                        </div>
+                        <div style="padding: 15px; background: rgba(0, 217, 255, 0.05); border-radius: 10px;">
+                            <h4 style="color: #64ff64; margin-bottom: 10px;">Bridge to Betting</h4>
+                            <p style="font-size: 0.9rem; line-height: 1.4;">Clear, discrete events (goals, saves, hits, ultimates) translate naturally into betting opportunities, making the game a perfect crossover between esports and sports wagering.</p>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Cards -->
+                    <div class="comparison-cards">
+                        <div class="comparison-card">
+                            <h4 style="color: #64ff64;">Double Audience, Single Product</h4>
+                            <p style="font-size: 0.9rem; line-height: 1.4;">Seamlessly unites MOBA core gamers and hockey/sports fans, creating a much larger addressable market.</p>
+                        </div>
+                        <div class="comparison-card">
+                            <h4 style="color: #64ff64;">Hype-first Design</h4>
+                            <p style="font-size: 0.9rem; line-height: 1.4;">Instead of realism, every mechanic is tuned to amplify the <em>feeling of winning</em> — steady micro-victories and explosive highlights that keep both players and spectators engaged.</p>
+                        </div>
+                        <div class="comparison-card">
+                            <h4 style="color: #64ff64;">Bridge to Betting</h4>
+                            <p style="font-size: 0.9rem; line-height: 1.4;">Clear, discrete events (goals, saves, hits, ultimates) translate naturally into betting opportunities, making the game a perfect crossover between esports and sports wagering.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Unique Core Gameplay -->
+        <div class="slide">
+            <h2 class="section-title">Unique Core Gameplay</h2>
+            <div class="slide-content">
+                <div class="content-grid">
+                    <div class="content-block">
+                        <h3 style="color: #00d9ff; margin-bottom: 20px;">Core Gameplay</h3>
+                        <ul class="bullet-points">
+                            <li><strong>6v6 Hybrid Teams</strong> - Perfect competitive balance</li>
+                            <li><strong>Forward / Defense / Goalie</strong> - Three distinct tactical roles</li>
+                            <li><strong>Skill Upgrade System</strong> - Dynamic mid-match ability enhancement</li>
+                            <li><strong>10-15 Minute Matches</strong> - Esports-optimized fast-paced experience</li>
+                            <li><strong>Cross-platform</strong> - Seamless PC/Mobile connectivity</li>
+                        </ul>
+                    </div>
+                    <div class="content-block">
+                        <h3 style="color: #00d9ff; margin-bottom: 20px;">Key Differentiators</h3>
+                        <ul class="bullet-points">
+                            <li><strong>MOBA Tactical Depth</strong> - Rich strategic layers, high spectator appeal</li>
+                            <li><strong>Hockey Pace & Physical</strong> - Adrenaline-fueled action</li>
+                            <li><strong>Spectator-Friendly</strong> - Born for competitive broadcasting</li>
+                            <li><strong>"Easy to Learn, Hard to Master"</strong> - Perfect learning curve design</li>
+                            <li><strong>Dynamic Role System</strong> - Roles adapt based on match flow</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3 style="color: #00d9ff; margin-bottom: 20px; text-align: center;">Core Design Philosophy</h3>
+                    <p style="font-size: 1.2rem; line-height: 1.6; text-align: center;">
+                        <strong>Not simulating hockey, but transforming hockey into MOBA tactics + esports rhythm.</strong><br>
+                        Every match is a strategic duel, every goal is a team victory, every skill activation brings both visual and tactical satisfaction.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Innovation Area -->
+        <div class="slide">
+            <h2 class="section-title">Innovation Area – The Unbeatable Edge</h2>
+            <div class="slide-content">
+                <div class="content-block" style="margin-bottom: 30px;">
+                    <h3 style="color: #00d9ff; margin-bottom: 20px; font-size: 1.4rem;">iGaming Know-how – The Driver</h3>
+                    <ul class="bullet-points">
+                        <li>From iGaming we mastered <strong>hype loops</strong> that keep players locked in.</li>
+                        <li>This know-how powers how we build <strong>Vibe</strong> and <strong>AI fairness</strong>.</li>
+                        <li>Competitors without this DNA cannot replicate our rhythm of <em>winning moments</em>.</li>
+                    </ul>
+                </div>
+
+                <div class="content-block" style="margin-bottom: 30px;">
+                    <h3 style="color: #00d9ff; margin-bottom: 20px; font-size: 1.4rem;">Vibe Coding – Feel Over Data</h3>
+                    <ul class="bullet-points">
+                        <li>Prototyping from <strong>player emotion</strong>, not spreadsheets.</li>
+                        <li>Every mechanic tuned to micro-victories that amplify adrenaline.</li>
+                        <li>Not realism — but <strong>engineered momentum and the feeling of winning</strong>.</li>
+                    </ul>
+                </div>
+
+                <div class="content-block" style="margin-bottom: 30px;">
+                    <h3 style="color: #00d9ff; margin-bottom: 20px; font-size: 1.4rem;">AI Playtesting – World's First Integrity Engine</h3>
+                    <ul class="bullet-points">
+                        <li><strong>AI leads core development and testing</strong>, eliminating human bias at the foundation.</li>
+                        <li>No backdoors, no exploits, no way to fake outcomes.</li>
+                        <li>The <strong>world's first AI-driven integrity engine</strong> — tamper-proof, cheat-proof, and trusted for esports and betting.</li>
+                        <li>A <strong>category-defining breakthrough</strong> no competitor has even attempted.</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <h3 style="color:#00d9ff; margin-bottom: 15px;">Attack Stance</h3>
+                    <p style="font-size: 1.1rem; line-height: 1.6;">
+                        We fuse <strong>iGaming-driven design</strong> with <strong>AI-secured integrity</strong>.<br>
+                        This is the once-in-history <strong>first-mover bonus</strong> — a market window only we can seize.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Demo & Design Philosophy -->
+        <div class="slide">
+            <h2 class="section-title">Demo & Design Philosophy</h2>
+            <div class="slide-content">
+                <div class="two-column">
+                    <div>
+                        <div class="demo-container">
+                            <iframe 
+                                src="https://drive.google.com/file/d/1qOdc6Zkh_YfxK7XbrtHHvEi5RaKlhLrD/preview" 
+                                width="100%" 
+                                height="100%" 
+                                allow="autoplay">
+                            </iframe>
+                        </div>
+                        <p style="text-align: center; font-size: 1rem; color: #cccccc; margin-top: 10px;">
+                            <strong>Live Gameplay Demo</strong> - Experience core mechanics
+                        </p>
+                    </div>
+                    <div>
+                        <div class="content-block">
+                            <h3 style="color: #00d9ff; margin-bottom: 20px;">Design Philosophy</h3>
+                            <ul class="bullet-points">
+                                <li><strong>Accessible Complexity</strong> - Simple rules with deep strategic layers</li>
+                                <li><strong>Competitive Integrity</strong> - Skill determines victory, zero Pay-to-Win</li>
+                                <li><strong>Spectator-first</strong> - Dual experience for playing and watching</li>
+                                <li><strong>Cross-platform Unity</strong> - Seamless PC/Mobile connection</li>
+                                <li><strong>Tournament-Ready</strong> - Every match can become esports content</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px; padding: 20px; background: rgba(0, 217, 255, 0.05); border-radius: 15px; border: 1px solid rgba(0, 217, 255, 0.3);">
+                    <p style="font-size: 1rem; color: #cccccc;">
+                        <strong>Demo shows core loop; full product will integrate community and esports tournament systems.</strong><br>
+                        From individual skill improvement to team collaboration, to global championships - a complete competitive ecosystem.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Investment Opportunity & Monetization Results -->
+        <div class="slide">
+            <h2 class="section-title">Investment Opportunity & Monetization Results</h2>
+            <div class="slide-content">
+                <div class="highlight-box" style="text-align: center; margin-bottom: 30px;">
+                    <h3 style="color: #00d9ff; margin-bottom: 20px; font-size: 1.5rem;">Hybrid sports-MOBA is a completely new category</h3>
+                    <p style="font-size: 1.2rem; line-height: 1.6;"><strong>Project H has unique first-mover advantage</strong></p>
+                </div>
+
+                <!-- Monetization Results Video -->
+                <div class="video-container">
+                    <iframe 
+                        src="https://drive.google.com/file/d/1t6QBMJuRI5XHP0VN5eG4Itu_i84tj-uM/preview" 
+                        width="100%" 
+                        height="100%" 
+                        allow="autoplay">
+                    </iframe>
+                </div>
+                <p style="text-align: center; font-size: 1rem; color: #cccccc; margin-bottom: 20px;">
+                    <strong>Monetization Strategy Results</strong> - Investment highlights driving revenue potential
+                </p>
+
+                <div class="content-grid">
+                    <div class="content-block">
+                        <h3 style="color: #00d9ff; margin-bottom: 20px;">Strategic Positioning</h3>
+                        <ul class="bullet-points">
+                            <li><strong>Market Position</strong> - Blue ocean opportunity, no direct competitors</li>
+                            <li><strong>Product Uniqueness</strong> - Only successful MOBA × Hockey case</li>
+                            <li><strong>Technical Leadership</strong> - Vibe Coding + AI innovation methodology</li>
+                            <li><strong>Global Expansion</strong> - Cross-platform architecture supports rapid internationalization</li>
+                        </ul>
+                    </div>
+                    <div class="content-block">
+                        <h3 style="color: #00d9ff; margin-bottom: 20px;">Investment Highlights</h3>
+                        <ul class="bullet-points">
+                            <li><strong>Esports + Betting</strong> - Dual revenue engine model</li>
+                            <li><strong>Partnership Potential</strong> - Natural collaboration with sports organizations</li>
+                            <li><strong>Proven Team</strong> - Innovation approach with competitive advantages</li>
+                            <li><strong>Scalable Technology</strong> - Built for global tournaments and media rights</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="stats-container" style="margin-top: 30px;">
+                    <div class="stat-item">
+                        <span class="stat-number">$8-12M</span>
+                        <span class="stat-label">Investment Required</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">21M</span>
+                        <span class="stat-label">Development Timeline</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">$50M+</span>
+                        <span class="stat-label">Year 3 Revenue Potential</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">Global</span>
+                        <span class="stat-label">Market Reach</span>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px; padding: 25px; background: rgba(0, 217, 255, 0.1); border-radius: 15px; border: 2px solid #00d9ff;">
+                    <h4 style="color: #00d9ff; margin-bottom: 15px; font-size: 1.4rem;">Join us to define the next golden category of esports</h4>
+                    <p style="color: #cccccc; font-size: 1.1rem;">Project H represents a unique opportunity to pioneer the sports-MOBA hybrid market with significant competitive advantages and proven team expertise.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">Previous</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                if (i === index) {
+                    slide.classList.add('active');
+                }
+            });
+            
+            document.getElementById('current-slide').textContent = index + 1;
+            
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (index === 0) {
+                prevBtn.style.opacity = '0.3';
+                prevBtn.style.cursor = 'not-allowed';
+            } else {
+                prevBtn.style.opacity = '1';
+                prevBtn.style.cursor = 'pointer';
+            }
+            
+            if (index === totalSlides - 1) {
+                nextBtn.textContent = 'Finish';
+                nextBtn.style.background = 'rgba(100, 255, 100, 0.2)';
+                nextBtn.style.borderColor = '#64ff64';
+            } else {
+                nextBtn.textContent = 'Next';
+                nextBtn.style.background = 'rgba(0, 217, 255, 0.2)';
+                nextBtn.style.borderColor = '#00d9ff';
+            }
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                showSlide(currentSlide);
+            } else if (newSlide >= totalSlides) {
+                if (confirm('Presentation completed! Return to the first slide?')) {
+                    currentSlide = 0;
+                    showSlide(currentSlide);
+                }
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                changeSlide(-1);
+            }
+        });
+
+        // Touch navigation for mobile
+        let startX = 0;
+        let endX = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            endX = e.changedTouches[0].clientX;
+            const difference = startX - endX;
+            
+            if (Math.abs(difference) > 50) {
+                if (difference > 0) {
+                    changeSlide(1);
+                } else {
+                    changeSlide(-1);
+                }
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
